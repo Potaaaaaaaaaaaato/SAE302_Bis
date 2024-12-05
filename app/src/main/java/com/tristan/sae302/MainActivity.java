@@ -4,6 +4,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,16 +22,16 @@ public class MainActivity extends AppCompatActivity {
         buttonClient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Lancer activité mode client
-                // Reste à : implémenter la logique du mode client
+                Intent intent = new Intent(MainActivity.this, ClientActivity.class);
+                startActivity(intent);
             }
         });
 
         buttonServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Lancer activité mode serveur
-                // Reste à : implémenter la logique du mode serveur
+                Intent intent = new Intent(MainActivity.this, ServerActivity.class);
+                startActivity(intent);
             }
         });
     }
