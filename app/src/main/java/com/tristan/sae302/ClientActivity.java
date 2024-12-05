@@ -18,7 +18,7 @@ import java.util.Date;
 
 public class ClientActivity extends AppCompatActivity {
 
-    private EditText ipEditText, portEditText, messageEditText;
+    private EditText ipEditText, portEditText, messageEditText, usernameEditText, passwordEditText;
     private Button connectButton, sendButton, disconnectButton, clearLogsButton, udpButton;
     private TextView clientLogTextView;
     private ScrollView logScrollView;
@@ -28,7 +28,7 @@ public class ClientActivity extends AppCompatActivity {
     private BufferedReader tcpInput;
 
     private DatagramSocket udpSocket;
-    private boolean isUDPMode = false; // Mode de communication (TCP par défaut)
+    private boolean isUDPMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +38,13 @@ public class ClientActivity extends AppCompatActivity {
         ipEditText = findViewById(R.id.ipEditText);
         portEditText = findViewById(R.id.portEditText);
         messageEditText = findViewById(R.id.messageEditText);
+        usernameEditText = findViewById(R.id.usernameEditText);
+        passwordEditText = findViewById(R.id.passwordEditText);
         connectButton = findViewById(R.id.connectButton);
         sendButton = findViewById(R.id.sendButton);
         disconnectButton = findViewById(R.id.disconnectButton);
         clearLogsButton = findViewById(R.id.clearLogsButton);
-        udpButton = findViewById(R.id.udpButton); // Nouveau bouton pour passer en mode UDP
+        udpButton = findViewById(R.id.udpButton);
         clientLogTextView = findViewById(R.id.clientLogTextView);
         logScrollView = findViewById(R.id.logScrollView);
 
@@ -71,9 +73,11 @@ public class ClientActivity extends AppCompatActivity {
             return;
         }
 
+        String username = usernameEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+
         if (isUDPMode) {
             try {
-                // Initialisation du socket UDP
                 udpSocket = new DatagramSocket();
                 appendLog("Mode UDP activé. Prêt à envoyer des messages.", Color.GREEN);
                 sendButton.setEnabled(true);
@@ -87,25 +91,38 @@ public class ClientActivity extends AppCompatActivity {
         } else {
             new Thread(() -> {
                 try {
-                    // Connexion TCP
                     tcpSocket = new Socket(serverIP, serverPort);
                     tcpOutput = new PrintWriter(new OutputStreamWriter(tcpSocket.getOutputStream()), true);
                     tcpInput = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
 
-                    runOnUiThread(() -> {
-                        appendLog("Connecté au serveur (TCP).", Color.GREEN);
-                        sendButton.setEnabled(true);
-                        disconnectButton.setEnabled(true);
-                        connectButton.setEnabled(false);
-                        ipEditText.setEnabled(false);
-                        portEditText.setEnabled(false);
-                    });
+                    // Envoyer les informations d'authentification
+                    tcpOutput.println(username + "," + password);
 
-                    // Écouter les messages du serveur TCP
-                    String response;
-                    while ((response = tcpInput.readLine()) != null) {
-                        String finalResponse = response;
-                        runOnUiThread(() -> appendLog("Serveur : " + finalResponse, Color.BLUE));
+                    // Attendre la réponse d'authentification
+                    String authResponse = tcpInput.readLine();
+                    if ("Success".equals(authResponse)) {
+                        runOnUiThread(() -> {
+                            appendLog("Authentification réussie. Connecté au serveur (TCP).", Color.GREEN);
+                            sendButton.setEnabled(true);
+                            disconnectButton.setEnabled(true);
+                            connectButton.setEnabled(false);
+                            ipEditText.setEnabled(false);
+                            portEditText.setEnabled(false);
+                            usernameEditText.setEnabled(false);
+                            passwordEditText.setEnabled(false);
+                        });
+
+                        // Écouter les messages du serveur TCP
+                        String response;
+                        while ((response = tcpInput.readLine()) != null) {
+                            String finalResponse = response;
+                            runOnUiThread(() -> appendLog("Serveur : " + finalResponse, Color.BLUE));
+                        }
+                    } else {
+                        runOnUiThread(() -> {
+                            appendLog("Authentification échouée.", Color.RED);
+                            disconnectFromServer();
+                        });
                     }
 
                 } catch (Exception e) {
@@ -122,17 +139,20 @@ public class ClientActivity extends AppCompatActivity {
             return;
         }
 
+        String serviceType = "echo"; // Par défaut, ou sélectionné par l'interface utilisateur
+        String fullMessage = serviceType + ":" + message;
+
         if (isUDPMode && udpSocket != null) {
             new Thread(() -> {
                 try {
                     String serverIP = ipEditText.getText().toString().trim();
                     int serverPort = Integer.parseInt(portEditText.getText().toString().trim());
-                    byte[] data = message.getBytes();
+                    byte[] data = fullMessage.getBytes();
 
                     // Envoyer le message au serveur
                     DatagramPacket packet = new DatagramPacket(data, data.length, InetAddress.getByName(serverIP), serverPort);
                     udpSocket.send(packet);
-                    appendLog("Moi (UDP) : " + message, Color.BLACK);
+                    appendLog("Moi (UDP) : " + fullMessage, Color.BLACK);
 
                     // Recevoir la réponse
                     byte[] buffer = new byte[1024];
@@ -147,10 +167,10 @@ public class ClientActivity extends AppCompatActivity {
             }).start();
         } else if (tcpOutput != null) {
             new Thread(() -> {
-                tcpOutput.println(message);
+                tcpOutput.println(fullMessage);
                 runOnUiThread(() -> {
-                    appendLog("Moi (TCP) : " + message, Color.BLACK);
-                    messageEditText.setText(""); // Effacer le champ de saisie
+                    appendLog("Moi (TCP) : " + fullMessage, Color.BLACK);
+                    messageEditText.setText("");
                 });
             }).start();
         }
@@ -173,6 +193,8 @@ public class ClientActivity extends AppCompatActivity {
                     disconnectButton.setEnabled(false);
                     ipEditText.setEnabled(true);
                     portEditText.setEnabled(true);
+                    usernameEditText.setEnabled(true);
+                    passwordEditText.setEnabled(true);
                 });
 
             } catch (Exception e) {
@@ -192,7 +214,7 @@ public class ClientActivity extends AppCompatActivity {
         SpannableString spannableMessage = new SpannableString(timestamp + message + "\n");
         spannableMessage.setSpan(new ForegroundColorSpan(color), 0, spannableMessage.length(), 0);
         clientLogTextView.append(spannableMessage);
-        logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN)); // Scroll vers le bas
+        logScrollView.post(() -> logScrollView.fullScroll(View.FOCUS_DOWN));
     }
 
     @Override
