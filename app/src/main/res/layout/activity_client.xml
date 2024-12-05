@@ -7,80 +7,144 @@
     android:layout_height="match_parent"
     tools:context=".ClientActivity">
 
-    <EditText
-        android:id="@+id/ipEditText"
-        android:layout_width="0dp"
+    <!-- Titre centré -->
+    <TextView
+        android:id="@+id/clientModeTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Adresse IP"
-        android:inputType="text"
+        android:text="Mode Client"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        android:layout_marginTop="32dp" />
 
-    <EditText
-        android:id="@+id/portEditText"
+    <!-- Groupe vertical avec chaînes de contraintes -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ipInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Port"
-        android:inputType="number"
-        app:layout_constraintTop_toBottomOf="@+id/ipEditText"
+        app:layout_constraintTop_toBottomOf="@id/clientModeTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        app:startIconDrawable="@drawable/router_24dp">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ipEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Adresse IP"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/portInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/ipInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        app:startIconDrawable="@drawable/port_24dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/portEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Port"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/connectButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Connexion"
-        app:layout_constraintTop_toBottomOf="@+id/portEditText"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="16dp" />
-
-    <EditText
-        android:id="@+id/messageEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Message"
-        android:inputType="text"
-        app:layout_constraintTop_toBottomOf="@+id/connectButton"
+        app:layout_constraintTop_toBottomOf="@id/portInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        app:icon="@drawable/connexion_24dp"
+        app:iconPadding="8dp" />
 
-    <Button
-        android:id="@+id/sendButton"
+    <!-- Nouveau bouton pour passer en mode UDP -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/udpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Envoyer"
-        app:layout_constraintTop_toBottomOf="@+id/messageEditText"
+        android:text="Passer en mode UDP"
+        app:layout_constraintTop_toBottomOf="@id/connectButton"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        app:icon="@drawable/udp_24dp" />
 
-    <Button
-        android:id="@+id/disconnectButton"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/messageInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/udpButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        app:startIconDrawable="@drawable/message_24dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/messageEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Message"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Déconnexion"
-        app:layout_constraintTop_toBottomOf="@+id/messageEditText"
-        app:layout_constraintStart_toEndOf="@+id/sendButton"
-        android:layout_margin="16dp" />
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/messageInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp">
 
-    <Button
-        android:id="@+id/clearLogsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Effacer les logs"
-        app:layout_constraintTop_toBottomOf="@+id/messageEditText"
-        app:layout_constraintStart_toEndOf="@+id/disconnectButton"
-        android:layout_margin="16dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Envoyer"
+            app:icon="@drawable/envoyer_24dp"
+            app:iconPadding="8dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_marginEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/disconnectButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Déconnexion"
+            app:icon="@drawable/deconnexion_24dp"
+            app:iconPadding="8dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_marginEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/clearLogsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Effacer les logs"
+            app:icon="@drawable/effacer_24dp"
+            app:iconPadding="8dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/logScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/sendButton"
+        app:layout_constraintTop_toBottomOf="@id/buttonGroup"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

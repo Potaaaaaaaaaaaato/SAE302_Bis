@@ -1,35 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ServerActivity">
 
+    <!-- Titre Mode Serveur -->
     <TextView
+        android:id="@+id/serverModeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mode serveur"
+        android:text="Mode Serveur"
         android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
 
-    <TextView
-        android:id="@+id/statusTextView"
+    <!-- Zone de logs avec style -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/logCard"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="16dp"
-        android:scrollbars="vertical"
-        android:text="Logs du serveur :"
-        android:textSize="16sp"
-        android:background="#EEEEEE"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/serverModeTitle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="16dp"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/statusTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Logs du serveur :\n(aucun log pour le moment)"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:background="#FAFAFA"
+                android:scrollbars="vertical" />
+        </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
