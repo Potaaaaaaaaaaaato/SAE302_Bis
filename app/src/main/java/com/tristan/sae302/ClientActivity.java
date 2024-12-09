@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
