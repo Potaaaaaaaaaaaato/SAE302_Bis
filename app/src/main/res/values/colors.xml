@@ -2,9 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryVariant">#3700B3</color>
-    <color name="colorSecondary">#03DAC5</color>
-    <color name="colorAccent">#03DAC5</color>
-    <color name="lightGray">#F0F0F0</color>
+    <!-- Nouveau thème avec des tons plus doux et naturels -->
+    <color name="colorPrimary">#5C7AEA</color>  <!-- Un bleu ciel apaisant -->
+    <color name="colorPrimaryVariant">#3F51B5</color>  <!-- Une variante plus sombre du bleu -->
+    <color name="colorSecondary">#FF9800</color>  <!-- Un orange vif pour contraster -->
+    <color name="colorAccent">#FF9800</color>  <!-- Utilisation de la couleur secondaire comme accent -->
+    <color name="lightGray">#ECEFF1</color>  <!-- Un gris plus clair pour une meilleure luminosité -->
 </resources>

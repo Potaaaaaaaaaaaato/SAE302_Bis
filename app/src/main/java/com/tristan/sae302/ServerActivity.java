@@ -1,19 +1,20 @@
 package com.tristan.sae302;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ServerActivity extends AppCompatActivity {
 
     private TextView statusTextView;
+    private TextView ipValue;
+    private TextView portValue;
     private ServerThread serverThread;
     private UDPServerThread udpServerThread;
 
@@ -29,12 +30,35 @@ public class ServerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_server);
 
         statusTextView = findViewById(R.id.statusTextView);
+        ipValue = findViewById(R.id.ipValue);
+        portValue = findViewById(R.id.portValue);
+
+        // Obtenir l'IP locale
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface networkInterface = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                        ipValue.setText(inetAddress.getHostAddress());
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            Log.e("ServerActivity", "Erreur lors de la récupération de l'adresse IP locale", e);
+            ipValue.setText("Erreur : IP non disponible");
+        }
+
+        // Afficher les ports sur lesquels les serveurs écoutent
+        portValue.setText(String.valueOf(12345)); // Port TCP
+        updateStatus("Serveur TCP démarré sur le port : 12345");
 
         serverThread = new ServerThread(12345);
         serverThread.start();
 
         udpServerThread = new UDPServerThread(12346);
         udpServerThread.start();
+        updateStatus("Serveur UDP démarré sur le port : 12346");
     }
 
     @Override
@@ -213,5 +237,9 @@ public class ServerActivity extends AppCompatActivity {
         private void updateStatus(String message) {
             runOnUiThread(() -> statusTextView.append("\n" + message));
         }
+    }
+
+    private void updateStatus(String message) {
+        runOnUiThread(() -> statusTextView.append("\n" + message));
     }
 }
