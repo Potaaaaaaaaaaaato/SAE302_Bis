@@ -5,9 +5,11 @@ import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import com.google.android.material.button.MaterialButton;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import android.net.Uri;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button buttonClient = findViewById(R.id.buttonClient);
         Button buttonServer = findViewById(R.id.buttonServer);
+        MaterialButton buttonGitHub = findViewById(R.id.buttonGitHub);
 
         buttonClient.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,10 +37,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        buttonGitHub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "https://github.com/Potaaaaaaaaaaaato/SAE302_Bis";
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }
+        });
     }
 }
-
-
-
-
-

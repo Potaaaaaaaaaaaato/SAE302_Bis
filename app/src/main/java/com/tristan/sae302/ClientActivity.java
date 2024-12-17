@@ -3,6 +3,7 @@ package com.tristan.sae302;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,12 +16,17 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ClientActivity extends AppCompatActivity {
+
+    private static final int REQUEST_CODE_SELECT_FILE = 1;
+    private static final int REQUEST_CODE_PERMISSIONS = 2;
 
     private EditText ipEditText, portEditText, messageEditText, usernameEditText, passwordEditText;
     private Button connectButton, sendButton, disconnectButton, clearLogsButton, udpButton, sendFileButton;
@@ -63,6 +69,14 @@ public class ClientActivity extends AppCompatActivity {
         clearLogsButton.setOnClickListener(v -> clientLogTextView.setText(""));
         udpButton.setOnClickListener(v -> toggleUDPMode());
         sendFileButton.setOnClickListener(v -> selectFile());
+
+        // Vérifier et demander les permissions à l'exécution
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_CODE_PERMISSIONS);
+        }
     }
 
     private void connectToServer() {
@@ -226,24 +240,31 @@ public class ClientActivity extends AppCompatActivity {
     }
 
     private void selectFile() {
+        appendLog("Sélection du fichier...", Color.BLACK);
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*"); // Tous types de fichiers
-        startActivityForResult(intent, 1); // Demande de résultat avec le code 1
+        startActivityForResult(intent, REQUEST_CODE_SELECT_FILE); // Demande de résultat avec le code 1
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == REQUEST_CODE_SELECT_FILE && resultCode == Activity.RESULT_OK && data != null) {
             Uri uri = data.getData();
             if (uri != null) {
+                appendLog("Fichier sélectionné : " + uri.toString(), Color.BLACK);
                 sendFile(uri);
+            } else {
+                appendLog("Erreur : URI du fichier nul.", Color.RED);
             }
+        } else {
+            appendLog("Erreur lors de la sélection du fichier.", Color.RED);
         }
     }
 
     private void sendFile(Uri fileUri) {
+        appendLog("Envoi du fichier...", Color.BLACK);
         if (isUDPMode && udpSocket != null) {
             sendFileUDP(fileUri);
         } else if (tcpSocket != null) {
@@ -321,5 +342,17 @@ public class ClientActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                appendLog("Permission accordée.", Color.GREEN);
+            } else {
+                appendLog("Permission refusée.", Color.RED);
+            }
+        }
     }
 }
