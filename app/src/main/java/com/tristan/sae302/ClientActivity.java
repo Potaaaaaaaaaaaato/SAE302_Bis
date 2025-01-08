@@ -150,6 +150,15 @@ public class ClientActivity extends AppCompatActivity {
 
                 } catch (Exception e) {
                     runOnUiThread(() -> appendLog("Erreur TCP : " + e.getMessage(), Color.RED));
+                } finally {
+                    // Fermer les ressources si nécessaire
+                    try {
+                        if (tcpSocket != null) tcpSocket.close();
+                        if (tcpOutput != null) tcpOutput.close();
+                        if (tcpInput != null) tcpInput.close();
+                    } catch (IOException e) {
+                        runOnUiThread(() -> appendLog("Erreur lors de la fermeture des ressources : " + e.getMessage(), Color.RED));
+                    }
                 }
             }).start();
         }
